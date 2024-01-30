@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<head>
+</head>
+<style>
+    @import url("https://fonts.googleapis.com/css?family=Montserrat:400,400i,700");
+
+body {
+	background-color: #111;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-family: montserrat;
+}
+.dropbtn {
+	font-family: montserrat;
+	background-color: #222228;
+	color: white;
+	padding: 16px;
+	font-size: 16px;
+	border: none;
+	border-radius: 10px 10px 10px 10px;
+	width: 150px;
+	box-shadow: 0px 0px 100px rgba(190, 200, 255, 0.6);
+}
+
+/* The container <div> - needed to position the dropdown content */
+.dropdown {
+	color: black;
+	position: relative;
+	display: inline-block;
+	width: 150px;
+	border-radius: 10px 10px 10px 10px;
+	z-index: 1;
+}
+
+.dropdown-content {
+	display: none;
+	position: absolute;
+	background-color: #222228;
+	min-width: 150px;
+	z-index: 1;
+	border-radius: 0px 0px 14px 14px;
+	box-shadow: 0px 0px 100px rgba(190, 200, 255, 0.25);
+}
+
+.dropdown-content a {
+	color: white;
+	padding: 12px 16px;
+	text-decoration: none;
+	display: block;
+	border-radius: 10px;
+	margin: 5px;
+}
+
+/* Change color of dropdown links on hover */
+.dropdown-content a:hover {
+	background-color: #33333f;
+}
+
+/* Show the dropdown menu on hover */
+.dropdown:hover .dropdown-content {
+	display: block;
+}
+
+/* Change the background color of the dropdown button when the dropdown content is shown */
+.dropdown:hover .dropbtn {
+	background-color: #222228;
+	border-radius: 10px 10px 0px 0px;
+	border-bottom: none;
+}
+@import 'https://fonts.googleapis.com/icon?family=Material+Icons|Roboto';
+
+body {
+  background: #fff;
+  font-family: 'Roboto Light';
+}
+
+body,
+html {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+* {
+    outline: none;
+}
+
+.recorder_wrapper {
+    width: 100%;
+    display: -webkit-flex;
+    display: -moz-flex;
+    display: -ms-flex;
+    display: -o-flex;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+}
+
+.recorder {
+    display: inline-block;
+    text-align: center;
+    width: 500px;
+    max-width: 100%;
+}
+
+.record_btn {
+    width: 100px;
+    height: 100px;
+    font-family: 'Material Icons';
+    font-size: 48px;
+    color: #e74c3c;
+    background: none;
+    border: 2px solid #e74c3c;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: 0.15s linear;
+}
+
+.record_btn:hover {
+    transition: 0.15s linear;
+    transform: scale( 1.05 );
+}
+
+.record_btn:active {
+    background: #f5f5f5;
+}
+
+.record_btn:after {
+    content: '\E029';
+}
+
+.record_btn[disabled] {
+    border: 2px solid #ccc;
+}
+
+.record_btn[disabled]:after {
+    content: '\E02B';
+    color: #ccc;
+}
+
+.record_btn[disabled]:hover {
+    transition: 0.15s linear;
+    transform: none;
+}
+
+.record_btn[disabled]:active {
+    background: none;
+}
+
+.recording {
+    animation: recording 2s infinite ease-in-out;
+    position: relative;
+}
+
+.recording:before {
+    content: '';
+    display: inline-block;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0px;
+    height: 0px;
+    margin: 0px;
+    border-radius: 50%;
+    background: rgba( 0, 0, 0, 0.05 );
+    animation: recording_before 2s infinite ease-in-out;
+}
+
+@keyframes recording {
+    from {
+        transform: scale( 1.1 );
+    }
+
+    50% {
+        transform: none;
+    }
+
+    to {
+        transform: scale( 1.1 );
+    }
+}
+
+@keyframes recording_before {
+    80% {
+        width: 200px;
+        height: 200px;
+        margin: -100px;
+        opacity: 0;
+    }
+
+    to {
+        opacity: 0;
+    }
+}
+
+.record_canvas {
+    width: 60px;
+    height: 100px;
+    display: inline-block;
+    
+}
+
+.txt_btn {
+    color: #000;
+    text-decoration: none;
+    transition: 0.15s linear;
+    animation: text_btn 0.3s ease-in-out;
+}
+
+</style>
+<div class="dropdown">
+	<button class="dropbtn">Hover here</button>
+	<div class="dropdown-content">
+		<a href="#">Hello.</a>
+		<a href="#">World.</a>
+		<a href="https://discord.gg/Pfcm5Gws">join my discord</a>
+	</div>
+ 
+</div>
+<div class="recorder_wrapper">
+    <div class="recorder">
+        <button class="record_btn" id="button"></button>
+        <p id="msg_box"></p>
+    </div>
+</div>
+<script>
+    var msg_box = document.getElementById( 'msg_box' ),
+    button = document.getElementById( 'button' ),
+    canvas = document.getElementById( 'canvas' ),
+lang = {
+    'mic_error': 'Error accessing the microphone', //Ошибка доступа к микрофону
+    'press_to_start': 'Press to start recording', //Нажмите для начала записи
+    'recording': 'Recording', //Запись
+    'play': 'Play', //Воспроизвести
+    'stop': 'Stop', //Остановить
+    'download': 'Download', //Скачать
+    'use_https': 'This application in not working over insecure connection. Try to use HTTPS'
+},
+time;
+
+
+msg_box.innerHTML = lang.press_to_start;
+
+if ( navigator.mediaDevices === undefined ) {
+    navigator.mediaDevices = {};
+}
+
+
+if ( navigator.mediaDevices.getUserMedia === undefined ) {
+    navigator.mediaDevices.getUserMedia = function ( constrains ) {
+        var getUserMedia = navigator.webkitGetUserMedia || navigator.mozGetUserMedia
+        if ( !getUserMedia )  {
+            return Promise.reject( new Error( 'getUserMedia is not implemented in this browser' ) );
+        }
+
+        return new Promise( function( resolve, reject ) {
+            getUserMedia.call( navigator, constrains, resolve, reject );
+        } );
+    }
+}
+
+
+if ( navigator.mediaDevices.getUserMedia ) {
+    var btn_status = 'inactive',
+        mediaRecorder,
+        chunks = [],
+        audio = new Audio(),
+        mediaStream,
+        audioSrc,
+        type = {
+            'type': 'audio/ogg,codecs=opus'
+        },
+        ctx,
+        analys,
+        blob;
+
+    button.onclick = function () {
+        if ( btn_status == 'inactive' ) {
+            start();
+        } else if ( btn_status == 'recording' ) {
+            stop();
+        }
+    }
+
+    function parseTime( sec ) {
+        var h = parseInt( sec / 3600 );
+        var m = parseInt( sec / 60 );
+        var sec = sec - ( h * 3600 + m * 60 );
+
+        h = h == 0 ? '' : h + ':';
+        sec = sec < 10 ? '0' + sec : sec;
+
+        return h + m + ':' + sec;
+    }
+
+
+    function start() {
+        navigator.mediaDevices.getUserMedia( { 'audio': true } ).then( function ( stream ) {
+            mediaRecorder = new MediaRecorder( stream );
+            mediaRecorder.start();
+
+            button.classList.add( 'recording' );
+            btn_status = 'recording';
+
+            msg_box.innerHTML = lang.recording;
+          
+            if ( navigator.vibrate ) navigator.vibrate( 150 );
+
+            time = Math.ceil( new Date().getTime() / 1000 );
+
+
+            mediaRecorder.ondataavailable = function ( event ) {
+                chunks.push( event.data );
+            }
+
+            mediaRecorder.onstop = function () {
+                stream.getTracks().forEach( function( track ) { track.stop() } );
+
+                blob = new Blob( chunks, type );
+                audioSrc = window.URL.createObjectURL( blob );
+
+                audio.src = audioSrc;
+
+                chunks = [];
+            }   
+
+            
+            
+        } ).catch( function ( error ) {
+            if ( location.protocol != 'https:' ) {
+              msg_box.innerHTML = lang.mic_error + '<br>'  + lang.use_https;
+            } else {
+              msg_box.innerHTML = lang.mic_error; 
+            }
+            button.disabled = true;
+        });
+    }
+
+    function stop() {
+        mediaRecorder.stop();
+        button.classList.remove( 'recording' );
+        btn_status = 'inactive';
+      
+        if ( navigator.vibrate ) navigator.vibrate( [ 200, 100, 200 ] );
+
+        var now = Math.ceil( new Date().getTime() / 1000 );
+
+        var t = parseTime( now - time );
+
+        msg_box.innerHTML = '<a href="#" onclick="play(); return false;" class="txt_btn">' + lang.play + ' (' + t + 's)</a><br>' +
+                            '<a href="#" onclick="save(); return false;" class="txt_btn">' + lang.download + '</a>'
+    }
+
+    
+
+    function play() {
+        audio.play();
+        msg_box.innerHTML = '<a href="#" onclick="pause(); return false;" class="txt_btn">' + lang.stop + '</a><br>' +
+                            '<a href="#" onclick="save(); return false;" class="txt_btn">' + lang.download + '</a>';
+    }
+
+    function pause() {
+        audio.pause();
+        audio.currentTime = 0;
+        msg_box.innerHTML = '<a href="#" onclick="play(); return false;" class="txt_btn">' + lang.play + '</a><br>' +
+                            '<a href="#" onclick="save(); return false;" class="txt_btn">' + lang.download + '</a>'
+    }
+
+    function roundedRect(ctx, x, y, width, height, radius, fill) {
+        ctx.beginPath();
+        ctx.moveTo(x, y + radius);
+        ctx.lineTo(x, y + height - radius);
+        ctx.quadraticCurveTo(x, y + height, x + radius, y + height);
+        ctx.lineTo(x + width - radius, y + height);
+        ctx.quadraticCurveTo(x + width, y + height, x + width, y + height - radius);
+        ctx.lineTo(x + width, y + radius);
+        ctx.quadraticCurveTo(x + width, y, x + width - radius, y);
+        ctx.lineTo(x + radius, y);
+        ctx.quadraticCurveTo(x, y, x, y + radius);
+        
+        ctx.fillStyle = fill;
+        ctx.fill();
+    }
+
+    function save() {
+        var a = document.createElement( 'a' );
+        a.download = 'record.ogg';
+        a.href = audioSrc;
+        document.body.appendChild( a );
+        a.click();
+
+        document.body.removeChild( a );
+    }
+
+} else {
+    if ( location.protocol != 'https:' ) {
+      msg_box.innerHTML = lang.mic_error + '<br>'  + lang.use_https;
+    } else {
+      msg_box.innerHTML = lang.mic_error; 
+    }
+    button.disabled = true;
+}
+</script>
+</html>
